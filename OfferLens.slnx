@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="OfferLens/OfferLens.Android/OfferLens.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="OfferLens/OfferLens.Desktop/OfferLens.Desktop.csproj" />
+  <Project Path="OfferLens/OfferLens.iOS/OfferLens.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="OfferLens/OfferLens/OfferLens.csproj" />
+</Solution>

@@ -1,0 +1,15 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OfferLens.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="using:OfferLens.Views"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="800"
+        Width="640"
+        Height="800"
+        WindowStartupLocation="CenterScreen"
+        x:Class="OfferLens.Views.MainWindow"
+        Icon="/Assets/icon.ico"
+        Title="OfferLens">
+        <views:MainView />
+</Window>

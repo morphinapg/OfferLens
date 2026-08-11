@@ -1,0 +1,39 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OfferLens.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="800"
+             x:Class="OfferLens.Views.MainView"
+             x:DataType="vm:MainViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*,*" Background="#40808080">
+
+    <ToggleButton HorizontalAlignment="Stretch" Background="Transparent">
+        <ToggleButton.Styles>
+            <!-- Default State (Off) -->
+            <Style Selector="ToggleButton">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Image Source="avares://OfferLens.Class/Assets/OffButton.png" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <!-- Checked State (On) -->
+            <Style Selector="ToggleButton:checked">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Image Source="avares://OfferLens.Class/Assets/OnButton.png" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+        </ToggleButton.Styles>
+    </ToggleButton>
+    </Grid>
+</UserControl>
