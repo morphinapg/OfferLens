@@ -39,9 +39,19 @@ public partial class MainView : UserControl
         if (DataContext is MainViewModel model && InputPane is not null)
         {
             var OccludedArea = InputPane.OccludedRect;
-            var Padding = this.Padding;
+            var OkayToOcclude = OffersOverlayTextBlock.Bounds.Height + OffersOverlayTextBlock.Margin.Top + OffersOverlayTextBlock.Margin.Bottom + BadOfferBorder.Bounds.Height + BadOfferBorder.Margin.Top + BadOfferBorder.Margin.Bottom;
 
-            var adjustment = OccludedArea.Height + Padding.Bottom + Padding.Top;
+            var OccludedHeight = OccludedArea.Height - OkayToOcclude;
+            if (OccludedHeight < 0)
+                OccludedHeight = 0;
+
+            var Padding = this.Padding;
+            
+            var adjustment = OccludedHeight + Padding.Bottom + Padding.Top;
+
+            if (adjustment < 0)
+                adjustment = 0;
+
             MainGrid.Height = this.Bounds.Height - adjustment;
         }
     }
