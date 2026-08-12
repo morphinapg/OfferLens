@@ -5,7 +5,8 @@
              xmlns:vm="using:OfferLens.ViewModels"
              mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="960"
              x:Class="OfferLens.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             >
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -16,7 +17,7 @@
         <vm:MainViewModel />
     </UserControl.DataContext>
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Background="#40808080">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Background="#40808080" VerticalAlignment="Top" x:Name="MainGrid" Loaded="MainGrid_Loaded">
         <TextBlock Text="OfferLens" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,10"/>
         <TextBlock Text="A simple tool to help you find the best gig offers" TextWrapping="Wrap" FontSize="16" HorizontalAlignment="Center" Margin="10,0,10,10" Grid.Row="1" Opacity="0.8" FontStyle="Italic"/>
 
@@ -57,12 +58,28 @@
             <CheckBox Content="Great" Grid.Row="1" Grid.Column="2" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding UseCustomGreat}"/>
 
             <TextBlock Text="Dollars Per Mile:" FontSize="18" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="10" TextWrapping="Wrap"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PerMileTargetGood}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24"/> 
-            <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding PerMileTargetGreat}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" IsEnabled="{Binding UseCustomGreat}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PerMileTargetGood_Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" TextChanged="TextBox_TextChanged">
+                <TextBox.InnerLeftContent>
+                    <TextBlock Text="$" Margin="10,0,0,0"/>
+                </TextBox.InnerLeftContent>
+            </TextBox>
+            <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding PerMileTargetGreat_Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" IsEnabled="{Binding UseCustomGreat}" TextChanged="TextBox_TextChanged">
+                <TextBox.InnerLeftContent>
+                    <TextBlock Text="$" Margin="10,0,0,0"/>
+                </TextBox.InnerLeftContent>
+            </TextBox>
 
             <TextBlock Text="Dollars Per Active Hour:" FontSize="18" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="10" TextWrapping="Wrap"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PerHourTargetGood}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24"/>
-            <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding PerHourTargetGreat}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" IsEnabled="{Binding UseCustomGreat}"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PerHourTargetGood_Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" TextChanged="TextBox_TextChanged">
+                <TextBox.InnerLeftContent>
+                    <TextBlock Text="$" Margin="10,0,0,0"/>
+                </TextBox.InnerLeftContent>
+            </TextBox>
+            <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding PerHourTargetGreat_Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="24" IsEnabled="{Binding UseCustomGreat}" TextChanged="TextBox_TextChanged">
+                <TextBox.InnerLeftContent>
+                    <TextBlock Text="$" Margin="10,0,0,0"/>
+                </TextBox.InnerLeftContent>
+            </TextBox>
 
             <TextBlock Text="Offers will be displayed with the following overlays:" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"/>
 
