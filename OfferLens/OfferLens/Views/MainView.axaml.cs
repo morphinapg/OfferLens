@@ -46,14 +46,71 @@ public partial class MainView : UserControl
                 OccludedHeight = 0;
 
             var Padding = this.Padding;
-            
+
             var adjustment = OccludedHeight + Padding.Bottom + Padding.Top;
 
             if (adjustment < 0)
                 adjustment = 0;
 
             MainGrid.Height = this.Bounds.Height - adjustment;
+
+            if (OccludedArea.Height == 0)
+            {
+                string?
+                    PerMileGood = model.PerMileTargetGood_Text,
+                    PerMileGreat = model.PerMileTargetGreat_Text,
+                    PerHourGood = model.PerHourTargetGood_Text,
+                    PerHourGreat = model.PerHourTargetGreat_Text;
+
+                if (PerMileGood is not null)
+                    model.PerMileTargetGood_Text = FormatTextNumber(PerMileGood);
+                if (PerMileGreat is not null)
+                    model.PerMileTargetGreat_Text = FormatTextNumber(PerMileGreat);
+                if (PerHourGood is not null)
+                    model.PerHourTargetGood_Text = FormatTextNumber(PerHourGood);
+                if (PerHourGreat is not null)
+                    model.PerHourTargetGreat_Text = FormatTextNumber(PerHourGreat);
+
+                if (toplevel is not null)
+                {
+                    var element = toplevel.FocusManager?.GetFocusedElement();
+
+                    if (element is not null && element is TextBox txt)
+                    {
+                        //set cursor to the end of the text
+                        var textlength = txt.Text?.Length ?? 0;
+                        txt.CaretIndex = textlength;
+                    }
+                }
+            }
         }
+    }
+
+    string FormatTextNumber(string text)
+    {
+        //We will reformat numbers under the following conditions:
+        //1. If the number contains a decimal place but no digits after it, we will remove the decimal place.
+        //2. If the number contains a single digit after the decimal place, we will add a zero to the end of it.
+        if (text.Contains('.'))
+        {
+            var parts = text.Split('.');
+            if (parts.Length == 2)
+            {
+                var integerPart = parts[0];
+                var decimalPart = parts[1];
+                if (decimalPart.Length == 0)
+                {
+                    // Remove the decimal point if there are no digits after it
+                    return integerPart;
+                }
+                else if (decimalPart.Length == 1)
+                {
+                    // Add a zero to the end if there's only one digit after the decimal
+                    return $"{integerPart}.{decimalPart}0";
+                }
+            }
+        }
+        return text;
     }
 
     //private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
@@ -129,6 +186,16 @@ public partial class MainView : UserControl
                 textBox.Text = cleaned;
                 textBox.CaretIndex = cleaned.Length;
             }
+        }
+    }
+
+    private void TextBox_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is TextBox textBox)
+        {
+            var txt = textBox.Text;
+            txt = FormatTextNumber(txt ?? string.Empty);
+            textBox.Text = txt;
         }
     }
 }

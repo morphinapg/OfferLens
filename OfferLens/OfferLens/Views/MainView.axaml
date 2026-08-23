@@ -17,92 +17,97 @@
         <vm:MainViewModel />
     </UserControl.DataContext>
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Background="#40808080" VerticalAlignment="Top" x:Name="MainGrid" Loaded="MainGrid_Loaded">
-        <TextBlock Text="OfferLens" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,10"/>
-        <TextBlock Text="A simple tool to help you find the best gig offers" TextWrapping="Wrap" FontSize="16" HorizontalAlignment="Center" Margin="10,0,10,10" Grid.Row="1" Opacity="0.8" FontStyle="Italic"/>
+    <Grid Background="#40808080" >
+        <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" VerticalAlignment="Top" x:Name="MainGrid" Loaded="MainGrid_Loaded" IsVisible="{Binding GridVisible}">
+            <TextBlock Text="OfferLens" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,10"/>
+            <TextBlock Text="A simple tool to help you find the best driving gig offers" TextWrapping="Wrap" FontSize="16" HorizontalAlignment="Center" Margin="10,0,10,10" Grid.Row="1" Opacity="0.8" FontStyle="Italic"/>
 
-        <ToggleButton HorizontalAlignment="Stretch" Background="Transparent" Grid.Row="2">
-            <ToggleButton.Styles>
-                <!-- Default State (Off) -->
-                <Style Selector="ToggleButton">
-                    <Setter Property="Template">
-                        <ControlTemplate>
-                            <Image Source="avares://OfferLens.Class/Assets/OffButton.png" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
-                        </ControlTemplate>
-                    </Setter>
-                </Style>
+            <ToggleButton HorizontalAlignment="Stretch" Background="Transparent" Grid.Row="2">
+                <ToggleButton.Styles>
+                    <!-- Default State (Off) -->
+                    <Style Selector="ToggleButton">
+                        <Setter Property="Template">
+                            <ControlTemplate>
+                                <Image Source="avares://OfferLens.Class/Assets/OffButton.png" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
+                            </ControlTemplate>
+                        </Setter>
+                    </Style>
 
-                <!-- Checked State (On) -->
-                <Style Selector="ToggleButton:checked">
-                    <Setter Property="Template">
-                        <ControlTemplate>
-                            <Image Source="avares://OfferLens.Class/Assets/OnButton.png" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
-                        </ControlTemplate>
-                    </Setter>
-                </Style>
-            </ToggleButton.Styles>
-        </ToggleButton>
+                    <!-- Checked State (On) -->
+                    <Style Selector="ToggleButton:checked">
+                        <Setter Property="Template">
+                            <ControlTemplate>
+                                <Image Source="avares://OfferLens.Class/Assets/OnButton.png" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
+                            </ControlTemplate>
+                        </Setter>
+                    </Style>
+                </ToggleButton.Styles>
+            </ToggleButton>
 
-        <TextBlock Text="When active, OfferLens will display an overlay on the screen when you get an offer, showing you the dollars per mile and per hour for that offer. Use the button above to toggle the feature on or off." FontSize="14" HorizontalAlignment="Center" Margin="10,10,10,10" TextWrapping="Wrap" Grid.Row="3" TextAlignment="Justify"/>
+            <TextBlock Text="When active, OfferLens will display an overlay on the screen when you get an offer, showing you the dollars per mile and per hour for that offer. Use the button above to toggle the feature on or off." FontSize="14" HorizontalAlignment="Center" Margin="10,10,10,10" TextWrapping="Wrap" Grid.Row="3" TextAlignment="Justify"/>
         
-        <Grid Grid.Row="4" ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,80" Margin="10,10,10,10">
+            <Grid Grid.Row="4" ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,80" Margin="10,10,10,10">
            
-            <Grid.Styles>
-                <Style Selector="Border">
-                    <Setter Property="CornerRadius" Value="5"/>
-                    <Setter Property="Padding" Value="5"/>
-                    <Setter Property="Margin" Value="10"/>
-                </Style>
+                <Grid.Styles>
+                    <Style Selector="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                        <Setter Property="Padding" Value="5"/>
+                        <Setter Property="Margin" Value="10"/>
+                    </Style>
 
-                <Style Selector="TextBox">
-                    <Setter Property="TextInputOptions.ContentType" Value="Number"/>
-                    <Setter Property="FontSize" Value="20"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                </Style>
-            </Grid.Styles>
-            <TextBlock Text="Minimum Targets" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center"/>
-            <TextBlock Text="Good" Grid.Row="1" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <CheckBox Content="Great" Grid.Row="1" Grid.Column="2" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding UseCustomGreat}"/>
+                    <Style Selector="TextBox">
+                        <Setter Property="TextInputOptions.ContentType" Value="Number"/>
+                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </Grid.Styles>
+                <TextBlock Text="Minimum Targets" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center"/>
+                <TextBlock Text="Good" Grid.Row="1" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <CheckBox Content="Great" Grid.Row="1" Grid.Column="2" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding UseCustomGreat}"/>
 
-            <TextBlock Text="Dollars Per Mile:" FontSize="18" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="10" TextWrapping="Wrap"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PerMileTargetGood_Text}" TextChanged="TextBox_TextChanged">
-                <TextBox.InnerLeftContent>
-                    <TextBlock Text="$" Margin="10,0,0,0"/>
-                </TextBox.InnerLeftContent>
-            </TextBox>
-            <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding PerMileTargetGreat_Text}" IsEnabled="{Binding UseCustomGreat}" TextChanged="TextBox_TextChanged">
-                <TextBox.InnerLeftContent>
-                    <TextBlock Text="$" Margin="10,0,0,0"/>
-                </TextBox.InnerLeftContent>
-            </TextBox>
+                <TextBlock Text="Dollars Per Mile:" FontSize="18" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="10" TextWrapping="Wrap"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PerMileTargetGood_Text}" TextChanged="TextBox_TextChanged" LostFocus="TextBox_LostFocus">
+                    <TextBox.InnerLeftContent>
+                        <TextBlock Text="$" Margin="10,0,0,0"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
+                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding PerMileTargetGreat_Text}" IsEnabled="{Binding UseCustomGreat}" TextChanged="TextBox_TextChanged" LostFocus="TextBox_LostFocus">
+                    <TextBox.InnerLeftContent>
+                        <TextBlock Text="$" Margin="10,0,0,0"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
 
-            <TextBlock Text="Dollars Per Active Hour:" FontSize="18" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="10" TextWrapping="Wrap"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PerHourTargetGood_Text}" TextChanged="TextBox_TextChanged">
-                <TextBox.InnerLeftContent>
-                    <TextBlock Text="$" Margin="10,0,0,0"/>
-                </TextBox.InnerLeftContent>
-            </TextBox>
-            <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding PerHourTargetGreat_Text}" IsEnabled="{Binding UseCustomGreat}" TextChanged="TextBox_TextChanged">
-                <TextBox.InnerLeftContent>
-                    <TextBlock Text="$" Margin="10,0,0,0"/>
-                </TextBox.InnerLeftContent>
-            </TextBox>
+                <TextBlock Text="Dollars Per Active Hour:" FontSize="18" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="10" TextWrapping="Wrap"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PerHourTargetGood_Text}" TextChanged="TextBox_TextChanged" LostFocus="TextBox_LostFocus">
+                    <TextBox.InnerLeftContent>
+                        <TextBlock Text="$" Margin="10,0,0,0"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
+                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding PerHourTargetGreat_Text}" IsEnabled="{Binding UseCustomGreat}" TextChanged="TextBox_TextChanged" LostFocus="TextBox_LostFocus">
+                    <TextBox.InnerLeftContent>
+                        <TextBlock Text="$" Margin="10,0,0,0"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
 
-            <TextBlock x:Name="OffersOverlayTextBlock" Text="Offers will be displayed with the following overlays:" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"/>
+                <TextBlock x:Name="OffersOverlayTextBlock" Text="Offers will be displayed with the following overlays:" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"/>
 
 
-            <Border x:Name="BadOfferBorder" Grid.Row="6" BorderBrush="Black" BorderThickness="2" Background="#DFDF4040">
-                <TextBlock Text="Bad Offer" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
-            </Border>
+                <Border x:Name="BadOfferBorder" Grid.Row="6" BorderBrush="Black" BorderThickness="2" Background="#DFDF4040">
+                    <TextBlock Text="Bad Offer" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
+                </Border>
 
-            <Border x:Name="GoodOfferBorder" Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="2" Background="#DFDFDF40">
-                <TextBlock Text="Good Offer" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
-            </Border>
+                <Border x:Name="GoodOfferBorder" Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="2" Background="#DFDFDF40">
+                    <TextBlock Text="Good Offer" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
+                </Border>
             
-            <Border x:Name="GreatOfferBorder" Grid.Row="6" Grid.Column="2" BorderBrush="Black" BorderThickness="2" Background="#DF40DF40">
-                <TextBlock Text="Great Offer" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
-            </Border>
+                <Border x:Name="GreatOfferBorder" Grid.Row="6" Grid.Column="2" BorderBrush="Black" BorderThickness="2" Background="#DF40DF40">
+                    <TextBlock Text="Great Offer" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
+                </Border>
+            </Grid>            
         </Grid>
+
+        <UserControl Content="{Binding PermissionPage}" IsVisible="{Binding PermissionVisible}"/>
     </Grid>
+    
 </UserControl>

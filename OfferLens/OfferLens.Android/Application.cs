@@ -2,6 +2,7 @@
 using Android.Runtime;
 using Avalonia;
 using Avalonia.Android;
+using OfferLens.Services;
 
 namespace OfferLens.Android
 {
@@ -14,6 +15,9 @@ namespace OfferLens.Android
 
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
+            // Initialize the accessibility permission service
+            AppServices.PermissionService = new AndroidAccessibilityService();
+
             return base.CustomizeAppBuilder(builder)
             .WithInterFont();
         }

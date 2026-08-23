@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OfferLens.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
+             x:Class="OfferLens.Views.PermissionPage"
+             x:DataType="vm:PermissionViewModel">
+      <Grid RowDefinitions="*,Auto,Auto,Auto,Auto,Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
+          <Grid.Styles>
+              <Style Selector="TextBlock">
+                  <Setter Property="Margin" Value="10"/>
+              </Style>
+          </Grid.Styles>
+
+          <Image Source="avares://OfferLens.Class/Assets/Icon.png" MaxHeight="250" Margin="10" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
+
+          <TextBlock Text="Welcome to OfferLens!" 
+                     FontSize="32" 
+                     FontWeight="Bold" 
+                     HorizontalAlignment="Center"
+                     Grid.Row="1"
+                     TextWrapping="Wrap"/>
+        <TextBlock
+            Text="This app will calculate the dollars per mile and dollars per hour for every offer you get in when driving for Doordash in Earn by Offer mode."
+            TextWrapping="Wrap"
+            TextAlignment="Justify"
+            FontSize="16"
+            Grid.Row="2"
+            />
+
+        <TextBlock Text="Permission Required" 
+                   FontSize="28" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Center"
+                   Grid.Row="3"/>
+    
+        <TextBlock Text="Before this app can work, OfferLens needs Accessibility permissions to read offer details (like payout and mileage) from your Dasher app in real-time. This allows the app to calculate the true value of your offers and display the color-coded overlay." 
+                   FontSize="16" 
+                   TextWrapping="Wrap" 
+                   TextAlignment="Justify" 
+                   Grid.Row="4"
+                   />
+
+        <Button Content="Enable in Settings"                
+                Command="{Binding OpenSettingsCommand}"
+                FontWeight="Bold" 
+                FontSize="18" 
+                HorizontalAlignment="Stretch" 
+                HorizontalContentAlignment="Center" 
+                Padding="15" 
+                CornerRadius="10"
+                Grid.Row="5"
+                Margin="10"/>
+    </Grid>
+</UserControl>

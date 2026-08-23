@@ -1,5 +1,9 @@
 ﻿using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using OfferLens.Services;
+using OfferLens.Views;
+using System.Runtime.Serialization.DataContracts;
 
 namespace OfferLens.ViewModels;
 
@@ -109,5 +113,33 @@ public partial class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(PerHourTargetGreat_Text));
             }
         }
+    }
+
+    [ObservableProperty]
+    public PermissionPage? _permissionPage;
+
+    [ObservableProperty]
+    public bool _permissionVisible = false;
+
+    public bool GridVisible => !PermissionVisible;
+
+    public MainViewModel()
+    {
+        if (AppServices.PermissionService is not null && !AppServices.PermissionService.IsServiceEnabled())
+        {
+            var model = new PermissionViewModel(AppServices.PermissionService);
+            model.PermissionGranted += Model_PermissionGranted;
+
+            PermissionPage = new PermissionPage() { DataContext = model };
+            PermissionVisible = true;   
+            OnPropertyChanged(nameof(GridVisible));
+        }
+    }
+
+    private void Model_PermissionGranted(object? sender, System.EventArgs e)
+    {
+        PermissionVisible = false;
+        PermissionPage = null;
+        OnPropertyChanged(nameof(GridVisible));
     }
 }
