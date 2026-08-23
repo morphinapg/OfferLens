@@ -1,9 +1,11 @@
 ﻿using Avalonia;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OfferLens.Services;
 using OfferLens.Views;
 using System.Runtime.Serialization.DataContracts;
+using System.Timers;
 
 namespace OfferLens.ViewModels;
 
@@ -116,30 +118,63 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    public PermissionPage? _permissionPage;
+    PermissionPage? _permissionPage;
 
     [ObservableProperty]
-    public bool _permissionVisible = false;
+    bool _permissionVisible = false;
 
-    public bool GridVisible => !PermissionVisible;
+    public double GridOpacity => PermissionVisible ? 0 : 1;
+
+    Timer PermissionCheckTimer = new(1000);
 
     public MainViewModel()
     {
-        if (AppServices.PermissionService is not null && !AppServices.PermissionService.IsServiceEnabled())
-        {
-            var model = new PermissionViewModel(AppServices.PermissionService);
-            model.PermissionGranted += Model_PermissionGranted;
+        var service = AppServices.PermissionService;
 
-            PermissionPage = new PermissionPage() { DataContext = model };
-            PermissionVisible = true;   
-            OnPropertyChanged(nameof(GridVisible));
+        if (service is not null)
+        {
+            if (!service.IsServiceEnabled())
+            {
+                LoadPermissionPage(service);
+            }
+
+            PermissionCheckTimer.Elapsed += (s, e) =>
+            {
+                //Every 1 second, we need to check if the permission has been granted or revoked, and adjust the display of the PermissionPage to accomodate
+
+                var hasPermission = service.IsServiceEnabled();
+
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (PermissionVisible)
+                    {
+                        if (hasPermission)
+                            UnloadPermissionPage();
+                    }
+                    else if (!hasPermission)
+                    {
+                        LoadPermissionPage(service);
+                    }
+                });                
+            };
+
+            PermissionCheckTimer.Start();
         }
     }
 
-    private void Model_PermissionGranted(object? sender, System.EventArgs e)
+    void LoadPermissionPage(IAccessibilityPermissionService service)
+    {
+        var model = new PermissionViewModel(service);
+
+        PermissionPage = new PermissionPage() { DataContext = model };
+        PermissionVisible = true;
+        OnPropertyChanged(nameof(GridOpacity));
+    }
+
+    void UnloadPermissionPage()
     {
         PermissionVisible = false;
         PermissionPage = null;
-        OnPropertyChanged(nameof(GridVisible));
+        OnPropertyChanged(nameof(GridOpacity));
     }
 }

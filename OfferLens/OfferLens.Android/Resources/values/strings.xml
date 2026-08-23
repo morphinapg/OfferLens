@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <string name="accessibility_description">OfferLens reads gig app offers to calculate value in real-time.</string>
+</resources>

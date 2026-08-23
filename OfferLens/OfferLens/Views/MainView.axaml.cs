@@ -30,8 +30,6 @@ public partial class MainView : UserControl
             if (InputPane is not null)
                 InputPane.StateChanged += InputPane_StateChanged;
         }
-
-
     }
 
     private void InputPane_StateChanged(object? sender, InputPaneStateEventArgs e)

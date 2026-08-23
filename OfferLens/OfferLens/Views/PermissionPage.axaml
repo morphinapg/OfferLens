@@ -22,7 +22,7 @@
                      Grid.Row="1"
                      TextWrapping="Wrap"/>
         <TextBlock
-            Text="This app will calculate the dollars per mile and dollars per hour for every offer you get in when driving for Doordash in Earn by Offer mode."
+            Text="This app will calculate the dollars per mile and dollars per hour for every offer you get when driving for Doordash in Earn by Offer mode."
             TextWrapping="Wrap"
             TextAlignment="Justify"
             FontSize="16"

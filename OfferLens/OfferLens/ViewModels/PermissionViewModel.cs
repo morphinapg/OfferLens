@@ -4,6 +4,7 @@ using OfferLens.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
 
 namespace OfferLens.ViewModels
 {
@@ -21,7 +22,5 @@ namespace OfferLens.ViewModels
         {
             _permissionService.OpenAccessibilitySettings();
         }
-
-        public event EventHandler PermissionGranted;
     }
 }
