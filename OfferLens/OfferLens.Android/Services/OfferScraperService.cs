@@ -2,6 +2,8 @@
 using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.Graphics.Drawables;
+using Android.Runtime;
 using Android.Views;
 using Android.Views.Accessibility;
 using Android.Widget;
@@ -10,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Android.Runtime;
 
 namespace OfferLens.Services
 {
@@ -36,20 +37,25 @@ namespace OfferLens.Services
                 return;
             }
 
-            // 2. Only listen to the DoorDash Dasher app, or my test app
-            if (e.PackageName != "com.doordash.driverapp" && e.PackageName != "com.CompanyName.OfferTestUI")
+            // 2. Ignore background system updates (clock ticking, wifi signal changing, etc.)
+            // If we don't return here, these events will trigger a false-positive screen wipe
+            if (e.PackageName == "com.android.systemui") return;
+
+            // 3. Grab the root node of whatever is currently occupying the screen
+            var rootNode = RootInActiveWindow;
+            if (rootNode == null) return;
+
+            // 4. Only listen to the DoorDash Dasher app, or my test app
+            var activePackage = rootNode.PackageName?.ToString();
+            if (activePackage != "com.doordash.driverapp" && activePackage != "com.CompanyName.OfferTestUI")
             {
                 ClearOverlays();
                 return;
             }
 
-            // 3. Only process Window Content or Window State changes
+            // 5. Only process Window Content or Window State changes
             if (e.EventType != EventTypes.WindowContentChanged &&
                 e.EventType != EventTypes.WindowStateChanged) return;
-
-            // 4. Grab the root node of the current screen
-            var rootNode = RootInActiveWindow;
-            if (rootNode == null) return;
 
             ExtractOfferData(rootNode);
         }
@@ -223,8 +229,18 @@ namespace OfferLens.Services
             overlayView.SetTypeface(null, TypefaceStyle.Bold);
             overlayView.SetTextColor(Color.Black);
 
-            // Use your specific Avalonia hex colors
-            overlayView.SetBackgroundColor(Color.ParseColor(hexColor));
+            // Create a new rectangle shape
+            var backgroundShape = new GradientDrawable();
+            backgroundShape.SetShape(ShapeType.Rectangle);
+
+            // Set your rounded corners (adjust the float value to make it more or less round)
+            backgroundShape.SetCornerRadius(5f);
+
+            // Set the color using your hex string
+            backgroundShape.SetColor(Color.ParseColor(hexColor));
+
+            // Apply the shape to the TextView
+            overlayView.Background = backgroundShape;
 
             // 3. Configure exact placement on the right side of the screen
             int overlayHeight = 80; // The height you specified from your XAML
