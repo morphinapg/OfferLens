@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.SimplePreferences;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -31,6 +32,7 @@ public partial class MainViewModel : ViewModelBase
 
             _perMileTargetGood_Text = value;
             OnPropertyChanged(nameof(PerMileTargetGood_Text));
+            Preferences.Set("PerMileTargetGood", PerMileTargetGood); // Save the value to preferences
         }
     }
 
@@ -53,6 +55,7 @@ public partial class MainViewModel : ViewModelBase
 
             _perMileTargetGreat_Text = value;
             OnPropertyChanged(nameof(PerMileTargetGreat_Text));
+            Preferences.Set("PerMileTargetGreat", PerMileTargetGreat); // Save the value to preferences
         }
     }
 
@@ -75,6 +78,7 @@ public partial class MainViewModel : ViewModelBase
 
             _perHourTargetGood_Text = value;
             OnPropertyChanged(nameof(PerHourTargetGood_Text));
+            Preferences.Set("PerHourTargetGood", PerHourTargetGood); // Save the value to preferences
         }
     }
 
@@ -97,6 +101,7 @@ public partial class MainViewModel : ViewModelBase
 
             _perHourTargetGreat_Text = value;
             OnPropertyChanged(nameof(PerHourTargetGreat_Text));
+            Preferences.Set("PerHourTargetGreat", PerHourTargetGreat); // Save the value to preferences
         }
     }
 
@@ -113,6 +118,24 @@ public partial class MainViewModel : ViewModelBase
                 // Notify that the related properties have changed
                 OnPropertyChanged(nameof(PerMileTargetGreat_Text));
                 OnPropertyChanged(nameof(PerHourTargetGreat_Text));
+
+                Preferences.Set("UseCustomGreat", value); // Save the value to preferences
+            }
+        }
+    }
+
+    bool _isActive = false;
+    public bool IsActive
+    {
+        get => _isActive;
+        set
+        {
+            if (_isActive != value)
+            {
+                _isActive = value;
+                OnPropertyChanged(nameof(IsActive));
+
+                Preferences.Set("IsActive", value); // Save the value to preferences
             }
         }
     }
@@ -159,6 +182,35 @@ public partial class MainViewModel : ViewModelBase
             };
 
             PermissionCheckTimer.Start();
+        }
+
+        if (Preferences.ContainsKey("PerMileTargetGood"))
+        {
+            var permilegood = Preferences.Get<double?>("PerMileTargetGood", null);
+            PerMileTargetGood_Text = permilegood.ToString();
+        }
+        if (Preferences.ContainsKey("PerHourTargetGood"))
+        {
+            var perhourgood = Preferences.Get<decimal?>("PerHourTargetGood", null);
+            PerHourTargetGood_Text = perhourgood.ToString();
+        }
+        if (Preferences.ContainsKey("PerMileTargetGreat"))
+        {
+            var permilegreat = Preferences.Get<double?>("PerMileTargetGreat", null);
+            PerMileTargetGreat_Text = permilegreat.ToString();
+        }
+        if (Preferences.ContainsKey("PerHourTargetGreat"))
+        {
+            var perhourgreat = Preferences.Get<decimal?>("PerHourTargetGreat", null);
+            PerHourTargetGreat_Text = perhourgreat.ToString();
+        }
+        if (Preferences.ContainsKey("UseCustomGreat"))
+        {
+            UseCustomGreat = Preferences.Get<bool>("UseCustomGreat", false);
+        }
+        if (Preferences.ContainsKey("IsActive"))
+        {
+            IsActive = Preferences.Get<bool>("IsActive", false);
         }
     }
 
