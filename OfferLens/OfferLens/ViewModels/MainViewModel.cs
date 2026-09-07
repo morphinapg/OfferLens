@@ -186,7 +186,7 @@ public partial class MainViewModel : ViewModelBase
 
         if (Preferences.ContainsKey("PerMileTargetGood"))
         {
-            var permilegood = Preferences.Get<double?>("PerMileTargetGood", null);
+            var permilegood = Preferences.Get<decimal?>("PerMileTargetGood", null);
             PerMileTargetGood_Text = permilegood.ToString();
         }
         if (Preferences.ContainsKey("PerHourTargetGood"))
@@ -196,7 +196,7 @@ public partial class MainViewModel : ViewModelBase
         }
         if (Preferences.ContainsKey("PerMileTargetGreat"))
         {
-            var permilegreat = Preferences.Get<double?>("PerMileTargetGreat", null);
+            var permilegreat = Preferences.Get<decimal?>("PerMileTargetGreat", null);
             PerMileTargetGreat_Text = permilegreat.ToString();
         }
         if (Preferences.ContainsKey("PerHourTargetGreat"))
