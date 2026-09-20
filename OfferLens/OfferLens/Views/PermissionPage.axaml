@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
              x:Class="OfferLens.Views.PermissionPage"
              x:DataType="vm:PermissionViewModel">
-      <Grid RowDefinitions="*,Auto,Auto,Auto,Auto,Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
+      <Grid RowDefinitions="*,Auto,Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Center" Margin="10">
           <Grid.Styles>
               <Style Selector="TextBlock">
                   <Setter Property="Margin" Value="10"/>
@@ -35,22 +35,65 @@
                    HorizontalAlignment="Center"
                    Grid.Row="3"/>
     
-        <TextBlock Text="Before this app can work, OfferLens needs Accessibility permissions to read offer details (like payout and mileage) from your Dasher app in real-time. This allows the app to calculate the true value of your offers and display the color-coded overlay." 
+        <TextBlock Text="Before this app can work, OfferLens needs access to the Android Accessibility Service permission to read the offer amount, mileage, and estimated time displayed by your Dasher app in real time. This allows the app to calculate the dollars per mile and dollars per hour of your offers and display the color-coded overlay. The offer information is processed locally on your device and is not transmitted to any servers" 
                    FontSize="16" 
                    TextWrapping="Wrap" 
                    TextAlignment="Justify" 
                    Grid.Row="4"
                    />
 
-        <Button Content="Enable in Settings"                
-                Command="{Binding OpenSettingsCommand}"
-                FontWeight="Bold" 
-                FontSize="18" 
-                HorizontalAlignment="Stretch" 
-                HorizontalContentAlignment="Center" 
-                Padding="15" 
-                CornerRadius="10"
-                Grid.Row="5"
-                Margin="10"/>
+          <TextBlock Text="The Accessibility Service is not used to control or automate any app, accept or decline offers, or perform actions on your behalf." 
+                     FontSize="16" 
+                     TextWrapping="Wrap" 
+                     TextAlignment="Justify" 
+                     Grid.Row="5"
+                     />
+
+        <Grid Grid.Row="6" ColumnDefinitions="2*,*">
+            <Button       
+                    Command="{Binding OpenSettingsCommand}"
+                    HorizontalAlignment="Stretch" 
+                    HorizontalContentAlignment="Center" 
+                    Padding="15" 
+                    CornerRadius="10"
+                    Margin="10">
+                <Grid RowDefinitions="Auto,Auto">
+                    <TextBlock Text="Agree" 
+                               FontSize="18" 
+                               FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" Margin="5"/>
+
+                    <TextBlock Text="Open Accessibility Settings" 
+                               FontSize="14" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" Grid.Row="1" Margin="5"/>
+                </Grid>
+            
+            </Button>
+
+            <Button       
+                    Command="{Binding ExitAppCommand}"
+                    HorizontalAlignment="Stretch" 
+                    HorizontalContentAlignment="Center" 
+                    Padding="15" 
+                    CornerRadius="10"
+                    Margin="10"
+                    Grid.Column="1">
+                <Grid RowDefinitions="Auto,Auto">
+                    <TextBlock Text="Decline" 
+                               FontSize="18" 
+                               FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" Margin="5"/>
+
+                    <TextBlock Text="Exit App" 
+                               FontSize="14" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" Grid.Row="1" Margin="5"/>
+                </Grid>
+            
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>

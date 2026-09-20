@@ -2,7 +2,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Platform;
-using Microsoft.Extensions.Logging;
+using Avalonia.Interactivity;
+using OfferLens.Services;
 using OfferLens.ViewModels;
 using System.Linq;
 
@@ -13,6 +14,7 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+        
     }
 
     IInputPane? InputPane;
@@ -21,6 +23,7 @@ public partial class MainView : UserControl
     private void MainGrid_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         toplevel = TopLevel.GetTopLevel(MainGrid);
+        AppServices.toplevel = toplevel;
 
         if (toplevel is not null)
         {
@@ -36,8 +39,10 @@ public partial class MainView : UserControl
     {
         if (DataContext is MainViewModel model && InputPane is not null)
         {
+            var OfferBorder = model.UseCustomGreat ? GreatOfferBorder : GoodOfferBorder; 
+
             var OccludedArea = InputPane.OccludedRect;
-            var OkayToOcclude = OffersOverlayTextBlock.Bounds.Height + OffersOverlayTextBlock.Margin.Top + OffersOverlayTextBlock.Margin.Bottom + BadOfferBorder.Bounds.Height + BadOfferBorder.Margin.Top + BadOfferBorder.Margin.Bottom;
+            var OkayToOcclude = OffersOverlayTextBlock.Bounds.Height + OffersOverlayTextBlock.Margin.Top + OffersOverlayTextBlock.Margin.Bottom + OfferBorder.Bounds.Height + OfferBorder.Margin.Top + OfferBorder.Margin.Bottom;
 
             var OccludedHeight = OccludedArea.Height - OkayToOcclude;
             if (OccludedHeight < 0)

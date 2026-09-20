@@ -1,11 +1,14 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.SimplePreferences;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OfferLens.Services;
 using OfferLens.Views;
+using System;
 using System.Runtime.Serialization.DataContracts;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace OfferLens.ViewModels;
@@ -115,6 +118,7 @@ public partial class MainViewModel : ViewModelBase
             {
                 _useCustomGreat = value;
                 OnPropertyChanged(nameof(UseCustomGreat));
+                OnPropertyChanged(nameof(NoGreat)); // Notify that the related property has changed
                 // Notify that the related properties have changed
                 OnPropertyChanged(nameof(PerMileTargetGreat_Text));
                 OnPropertyChanged(nameof(PerHourTargetGreat_Text));
@@ -123,6 +127,8 @@ public partial class MainViewModel : ViewModelBase
             }
         }
     }
+
+    public bool NoGreat => !UseCustomGreat;
 
     bool _isActive = false;
     public bool IsActive
@@ -134,6 +140,7 @@ public partial class MainViewModel : ViewModelBase
             {
                 _isActive = value;
                 OnPropertyChanged(nameof(IsActive));
+                
 
                 Preferences.Set("IsActive", value); // Save the value to preferences
             }
@@ -141,12 +148,13 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    PermissionPage? _permissionPage;
+    UserControl? _permissionPage;
 
     [ObservableProperty]
     bool _permissionVisible = false;
 
     public double GridOpacity => PermissionVisible ? 0 : 1;
+    public bool GridEnabled => !PermissionVisible;
 
     Timer PermissionCheckTimer = new(1000);
 
@@ -169,7 +177,7 @@ public partial class MainViewModel : ViewModelBase
 
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    if (PermissionVisible)
+                    if (PermissionVisible && PermissionPage is PermissionPage)
                     {
                         if (hasPermission)
                             UnloadPermissionPage();
@@ -178,7 +186,7 @@ public partial class MainViewModel : ViewModelBase
                     {
                         LoadPermissionPage(service);
                     }
-                });                
+                });
             };
 
             PermissionCheckTimer.Start();
@@ -221,6 +229,7 @@ public partial class MainViewModel : ViewModelBase
         PermissionPage = new PermissionPage() { DataContext = model };
         PermissionVisible = true;
         OnPropertyChanged(nameof(GridOpacity));
+        OnPropertyChanged(nameof(GridEnabled));
     }
 
     void UnloadPermissionPage()
@@ -228,5 +237,63 @@ public partial class MainViewModel : ViewModelBase
         PermissionVisible = false;
         PermissionPage = null;
         OnPropertyChanged(nameof(GridOpacity));
+        OnPropertyChanged(nameof(GridEnabled));
+    }
+
+    [RelayCommand]
+    void OpenHelp()
+    {
+        PermissionPage = new HelpGuide();
+
+        PermissionVisible = true;
+        OnPropertyChanged(nameof(GridOpacity));
+        OnPropertyChanged(nameof(GridEnabled));
+    }
+
+    [RelayCommand]
+    void OpenSettings()
+    {
+        var service = AppServices.PermissionService;
+
+        if (service is not null)
+        {
+            service.OpenAccessibilitySettings();
+        }
+    }
+
+    [RelayCommand]
+    void CloseHelpPage()
+    {
+        PermissionVisible = false;
+        PermissionPage = null;
+        OnPropertyChanged(nameof(GridOpacity));
+        OnPropertyChanged(nameof(GridEnabled));
+    }
+
+    [RelayCommand]
+    async void DonatePaypal()
+    {
+        //open the paypal donation link in the default browser
+        var url = "https://www.paypal.com/donate/?hosted_button_id=P4DWHJRU2N9WE";
+
+        var toplevel = AppServices.toplevel;
+
+        if (toplevel is not null)
+        {
+            await toplevel.Launcher.LaunchUriAsync(new Uri(url));
+        }
+    }
+
+    [RelayCommand]
+    async Task DonateCashApp()
+    {
+        //open the cashapp donation link in the default browser
+        var url = "https://cash.app/$morphinapg"; 
+
+        var toplevel = AppServices.toplevel;
+        if (toplevel is not null)
+        {
+            await toplevel.Launcher.LaunchUriAsync(new Uri(url));
+        }
     }
 }

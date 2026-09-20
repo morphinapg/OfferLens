@@ -22,5 +22,11 @@ namespace OfferLens.ViewModels
         {
             _permissionService.OpenAccessibilitySettings();
         }
+
+        [RelayCommand]
+        void ExitApp()
+        {
+            Environment.Exit(0);
+        }
     }
 }
