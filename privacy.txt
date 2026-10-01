@@ -1,0 +1,1 @@
+This app does not collect any personal data. It only reads the offer details from your Dasher app in real-time to calculate the dollars per mile and dollars per hour for each offer. The app does not store or transmit any of this data.
