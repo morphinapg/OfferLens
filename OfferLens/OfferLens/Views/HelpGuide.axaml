@@ -37,6 +37,12 @@
                     At the moment, this app works with the Doordash Dasher app. If OfferLens becomes more popular, it may be expanded to work with other driving gig apps in the future. Because I am a Dasher myself, I am most familiar with the Dasher app and can more easily test any updates myself. 
                 </TextBlock>
 
+                <TextBlock Text="Does OfferLens work outside the United States?" FontSize="24" FontWeight="Bold" Margin="10" TextWrapping="Wrap"/>
+
+                <TextBlock TextWrapping="Wrap" Margin="10" TextAlignment="Justify" FontSize="16">
+                    Currently, OfferLens only supports US DoorDash offers formatted in US Dollars ($) and miles (mi). Support for international currencies and metric units (kilometers) may be added in future updates based on driver demand.
+                </TextBlock>
+
                 <TextBlock Text="Something isn't working right. How do I report an issue?" FontSize="24" FontWeight="Bold" Margin="10" TextWrapping="Wrap"/>
 
                 <TextBlock TextWrapping="Wrap" Margin="10" TextAlignment="Justify" FontSize="16">
