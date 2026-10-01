@@ -10,6 +10,7 @@ using Android.Widget;
 using Avalonia.SimplePreferences;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -66,9 +67,9 @@ namespace OfferLens.Services
                 return;
             }
 
-            // Only process Window Content or Window State changes
             if (e.EventType != EventTypes.WindowContentChanged &&
-                e.EventType != EventTypes.WindowStateChanged) return;
+            e.EventType != EventTypes.WindowStateChanged &&
+            e.EventType != EventTypes.WindowsChanged) return;
 
             ExtractOfferData(targetRoots); // Pass the list instead of a single root
         }
@@ -134,7 +135,7 @@ namespace OfferLens.Services
                 var payoutMatch = Regex.Match(text, @"\$(\d+\.\d{2})");
                 if (payoutMatch.Success)
                 {
-                    payout = double.Parse(payoutMatch.Groups[1].Value);
+                    payout = double.Parse(payoutMatch.Groups[1].Value, CultureInfo.InvariantCulture);
                     payoutNode = node;
                 }
 
@@ -142,7 +143,7 @@ namespace OfferLens.Services
                 var milesMatch = Regex.Match(text, @"(\d+(\.\d+)?)\s*mi");
                 if (milesMatch.Success)
                 {
-                    miles = double.Parse(milesMatch.Groups[1].Value);
+                    miles = double.Parse(milesMatch.Groups[1].Value, CultureInfo.InvariantCulture);
                 }
 
                 // Find Time Node (Look for both formats)
@@ -151,7 +152,7 @@ namespace OfferLens.Services
 
                 if (deliverByMatch.Success)
                 {
-                    deliverBy = DateTime.Parse(deliverByMatch.Groups[1].Value);
+                    deliverBy = DateTime.Parse(deliverByMatch.Groups[1].Value, CultureInfo.InvariantCulture);
                     timeNode = node;
 
                     // Truncate DateTime.Now to the current minute to stop the rate from creeping
@@ -165,7 +166,7 @@ namespace OfferLens.Services
                 else if (estMinMatch.Success)
                 {
                     // Calculate hours directly from the estimated minutes
-                    double minutes = double.Parse(estMinMatch.Groups[1].Value);
+                    double minutes = double.Parse(estMinMatch.Groups[1].Value, CultureInfo.InvariantCulture);
                     hours = minutes / 60.0;
                     timeNode = node;
                 }
@@ -187,7 +188,7 @@ namespace OfferLens.Services
                 timeNode.GetBoundsInScreen(timeBounds);
 
                 // If the text and positions haven't changed, DO NOTHING.
-                if (_activeOverlays.Count > 0 &&
+                if (_mileOverlay != null && _hourOverlay != null &&
                     _lastMileText == mileText && _lastHourText == hourText &&
                     _lastMileY == payoutBounds.CenterY() && _lastHourY == timeBounds.CenterY())
                 {
@@ -204,11 +205,11 @@ namespace OfferLens.Services
                 string mileColor = GetOverlayColor(perMile, targetGoodMile, targetGreatMile, useCustomGreat && targetGreatMile != null);
                 string hourColor = GetOverlayColor(perHour, targetGoodHour, targetGreatHour, useCustomGreat && targetGreatHour != null);
 
-                // Wipe and redraw only when something actually changes
-                ClearOverlays();
+                //// Wipe and redraw only when something actually changes
+                //ClearOverlays();
 
-                DrawTargetedOverlay(payoutNode, mileText, mileColor);
-                DrawTargetedOverlay(timeNode, hourText, hourColor);
+                DrawTargetedOverlay(payoutNode, mileText, mileColor, ref _mileOverlay);
+                DrawTargetedOverlay(timeNode, hourText, hourColor, ref _hourOverlay);
 
                 // Cache the state
                 _lastMileText = mileText;
@@ -263,9 +264,11 @@ namespace OfferLens.Services
         }
 
         private IWindowManager? _windowManager;
-        private List<View> _activeOverlays = new(); // Keep track so we can remove them later
+        // Remove the _activeOverlays List entirely
+        private TextView? _mileOverlay;
+        private TextView? _hourOverlay;
 
-        private void DrawTargetedOverlay(AccessibilityNodeInfo targetNode, string text, string hexColor)
+        private void DrawTargetedOverlay(AccessibilityNodeInfo targetNode, string text, string hexColor, ref TextView? overlayView)
         {
             if (_windowManager == null)
             {
@@ -273,42 +276,16 @@ namespace OfferLens.Services
                 _windowManager = wmObject?.JavaCast<IWindowManager>();
             }
 
-            // 1. Get the physical screen coordinates of the Dasher text
             Rect bounds = new Rect();
             targetNode.GetBoundsInScreen(bounds);
 
-            // 2. Create your visual border/box
-            var overlayView = new TextView(this)
-            {
-                Text = text,
-                TextSize = 16,
-                Gravity = GravityFlags.Center
-            };
-            overlayView.SetTypeface(null, TypefaceStyle.Bold);
-            overlayView.SetTextColor(Color.Black);
-
-            // Create a new rectangle shape
-            var backgroundShape = new GradientDrawable();
-            backgroundShape.SetShape(ShapeType.Rectangle);
-
-            // Set your rounded corners (adjust the float value to make it more or less round)
-            backgroundShape.SetCornerRadius(15f);
-
-            // Set the color using your hex string
-            backgroundShape.SetColor(Color.ParseColor(hexColor));
-
-            // Apply the shape to the TextView
-            overlayView.Background = backgroundShape;
-
-            // 3. Configure exact placement on the right side of the screen
-            int overlayHeight = DpToPx(35); // The height you specified from your XAML
-            int overlayWidth = DpToPx(100); // Adjust width as needed to fit your text
+            int overlayHeight = DpToPx(35);
+            int overlayWidth = DpToPx(100);
 
             var layoutParams = new WindowManagerLayoutParams(
                 overlayWidth,
                 overlayHeight,
                 WindowManagerTypes.AccessibilityOverlay,
-                // Add LayoutInScreen and LayoutNoLimits here
                 WindowManagerFlags.NotFocusable | WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutInScreen | WindowManagerFlags.LayoutNoLimits,
                 Format.Translucent)
             {
@@ -317,8 +294,46 @@ namespace OfferLens.Services
                 Y = bounds.CenterY() - (overlayHeight / 2)
             };
 
-            _windowManager?.AddView(overlayView, layoutParams);
-            _activeOverlays.Add(overlayView);
+            if (overlayView == null)
+            {
+                // 1. Create the view for the first time
+                overlayView = new TextView(this)
+                {
+                    Text = text,
+                    TextSize = 16,
+                    Gravity = GravityFlags.Center
+                };
+                overlayView.SetTypeface(null, TypefaceStyle.Bold);
+                overlayView.SetTextColor(Color.Black);
+
+                var backgroundShape = new GradientDrawable();
+                backgroundShape.SetShape(ShapeType.Rectangle);
+                backgroundShape.SetCornerRadius(15f);
+                backgroundShape.SetColor(Color.ParseColor(hexColor));
+                overlayView.Background = backgroundShape;
+
+                _windowManager?.AddView(overlayView, layoutParams);
+            }
+            else
+            {
+                // 2. Update the existing view smoothly
+                overlayView.Text = text;
+                if (overlayView.Background is GradientDrawable backgroundShape)
+                {
+                    backgroundShape.SetColor(Color.ParseColor(hexColor));
+                }
+
+                try
+                {
+                    _windowManager?.UpdateViewLayout(overlayView, layoutParams);
+                }
+                catch
+                {
+                    // Failsafe if the OS forcefully detached the view
+                    try { _windowManager?.RemoveView(overlayView); } catch { }
+                    _windowManager?.AddView(overlayView, layoutParams);
+                }
+            }
         }
 
         private int DpToPx(int dp)
@@ -330,18 +345,24 @@ namespace OfferLens.Services
 
         private void ClearOverlays()
         {
-            if (_activeOverlays.Count == 0 || _windowManager == null) return;
-
-            foreach (var view in _activeOverlays)
-            {
-                try { _windowManager.RemoveView(view); } catch { }
-            }
-
-            _activeOverlays.Clear();
             _lastMileText = "";
             _lastHourText = "";
             _lastMileY = -1;
             _lastHourY = -1;
+
+            if (_windowManager != null)
+            {
+                if (_mileOverlay != null)
+                {
+                    try { _windowManager.RemoveView(_mileOverlay); } catch { }
+                    _mileOverlay = null;
+                }
+                if (_hourOverlay != null)
+                {
+                    try { _windowManager.RemoveView(_hourOverlay); } catch { }
+                    _hourOverlay = null;
+                }
+            }
         }
     }
 }
