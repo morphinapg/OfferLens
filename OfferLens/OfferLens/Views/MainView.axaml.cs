@@ -5,6 +5,7 @@ using Avalonia.Controls.Platform;
 using Avalonia.Interactivity;
 using OfferLens.Services;
 using OfferLens.ViewModels;
+using System;
 using System.Linq;
 
 namespace OfferLens.Views;
@@ -32,6 +33,25 @@ public partial class MainView : UserControl
 
             if (InputPane is not null)
                 InputPane.StateChanged += InputPane_StateChanged;
+
+            toplevel.BackRequested += Toplevel_BackRequested;
+        }
+    }
+
+    private void Toplevel_BackRequested(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainViewModel model)
+        {
+            if (model.PermissionVisible)
+            {
+                model.CloseHelpPage();
+                e.Handled = true;
+            }
+            else
+            {
+                //close the app
+                Environment.Exit(0);
+            }
         }
     }
 

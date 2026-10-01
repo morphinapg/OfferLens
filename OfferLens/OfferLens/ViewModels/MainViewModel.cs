@@ -262,7 +262,7 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    void CloseHelpPage()
+    public void CloseHelpPage()
     {
         PermissionVisible = false;
         PermissionPage = null;
