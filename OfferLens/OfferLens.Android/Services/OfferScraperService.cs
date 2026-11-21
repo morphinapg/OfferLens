@@ -35,7 +35,7 @@ namespace OfferLens.Services
         private static readonly Regex LeadingMinutesRegex = new(@"^\s*(\d+)\s*mins?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private Handler? _mainHandler;
-        private Action? _scanAction;
+        private System.Action? _scanAction;
         private bool _isScanScheduled;
         private long _lastScanTimeMs;
 
@@ -71,7 +71,6 @@ namespace OfferLens.Services
         {
             if (e == null) return;
 
-            // 1. Filter event types FIRST (zero Binder IPC cost for irrelevant events)
             var eventType = e.EventType;
             if (eventType != EventTypes.WindowContentChanged &&
                 eventType != EventTypes.WindowStateChanged &&
@@ -80,20 +79,23 @@ namespace OfferLens.Services
                 return;
             }
 
-            // 2. Ignore events triggered by our own overlays to prevent feedback loops
             string? eventPkg = e.PackageName?.ToString();
             if (eventPkg == PackageName)
                 return;
 
-            // 3. If switching to another app/launcher, scan immediately so overlays vanish instantly
-            bool isWindowSwitch = eventType == EventTypes.WindowStateChanged || eventType == EventTypes.WindowsChanged;
-            if (isWindowSwitch && eventPkg != null && eventPkg != DasherPackage && eventPkg != TestPackage)
+            bool isTargetPkg = eventPkg == DasherPackage || eventPkg == TestPackage;
+            bool hasOverlays = _mileOverlay != null || _hourOverlay != null;
+
+            if (eventPkg != null && !isTargetPkg)
             {
-                ScheduleScan(immediate: true);
-                return;
+                // Only scan if we need to tear down active overlays after leaving Dasher
+                if (hasOverlays)
+                    ScheduleScan(immediate: true);
+
+                return; // Zero IPC and zero timer scheduling while using any other app
             }
 
-            // 4. Throttle rapid WindowContentChanged bursts (live map + countdown bar)
+            // eventPkg is Dasher, OfferTestUI, or null (common for global WindowsChanged events)
             ScheduleScan(immediate: false);
         }
 
@@ -470,7 +472,7 @@ namespace OfferLens.Services
                     backgroundShape.SetColor(Color.ParseColor(hexColor));
                 }
 
-                if (overlayView.IsAttachedToWindow)
+                if (overlayView.Parent != null)
                 {
                     try
                     {
@@ -478,7 +480,7 @@ namespace OfferLens.Services
                     }
                     catch
                     {
-                        try { _windowManager?.RemoveView(overlayView); } catch { }
+                        try { _windowManager?.RemoveViewImmediate(overlayView); } catch { }
                         _windowManager?.AddView(overlayView, layoutParams);
                     }
                 }
@@ -506,12 +508,18 @@ namespace OfferLens.Services
             {
                 if (_mileOverlay != null)
                 {
-                    try { _windowManager.RemoveView(_mileOverlay); } catch { }
+                    if (_mileOverlay.Parent != null)
+                    {
+                        try { _windowManager.RemoveViewImmediate(_mileOverlay); } catch { }
+                    }
                     _mileOverlay = null;
                 }
                 if (_hourOverlay != null)
                 {
-                    try { _windowManager.RemoveView(_hourOverlay); } catch { }
+                    if (_hourOverlay.Parent != null)
+                    {
+                        try { _windowManager.RemoveViewImmediate(_hourOverlay); } catch { }
+                    }
                     _hourOverlay = null;
                 }
             }
